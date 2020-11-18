@@ -2,7 +2,9 @@ package kr.co.example.user.service;
 
 import kr.co.example.common.CommonException;
 import kr.co.example.common.dto.IResultBodyResponse;
+import kr.co.example.common.dto.ResultListResponse;
 import kr.co.example.user.dto.UserCreateRequest;
+import kr.co.example.user.dto.UserResponse;
 import kr.co.example.user.entity.User;
 import kr.co.example.user.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,15 +45,24 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void deleteUser(String id) throws CommonException {
 
-        log.info("삭제 할 사용자 아이디: {}", id);
+        try {
 
-        User user = userRepositoryImpl.findById(id).orElseThrow(() -> {
-           String errMsg = "아이디가 존재하지 않습니다.";
+            log.info("삭제 할 사용자 아이디: {}", id);
 
-           return new CommonException(new NullPointerException(errMsg), errMsg);
-        });
+            User user = userRepositoryImpl.findById(id).orElseThrow(() -> {
+                String errMsg = "아이디가 존재하지 않습니다.";
 
-        userRepositoryImpl.delete(user);
+                return new CommonException(new NullPointerException(errMsg), errMsg);
+            });
+
+            userRepositoryImpl.delete(user);
+        } catch ( CommonException e ) {
+
+            throw e;
+        } catch ( Exception e ) {
+
+            throw new CommonException(e, "사용자 삭제 중 오류가 발생하였습니다.");
+        }
     }
 
     @Override
@@ -59,6 +70,9 @@ public class UserServiceImpl implements IUserService {
 
         try {
 
+            return ResultListResponse.builder()
+                    .list(UserResponse.listFrom(userRepositoryImpl.findAll()))
+                    .build();
         } catch ( Exception e ) {
 
             throw new CommonException(e, "사용자 목록 조회 중 오류가 발생하였습니다.");
