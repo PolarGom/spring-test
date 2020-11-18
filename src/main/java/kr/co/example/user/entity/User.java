@@ -16,15 +16,16 @@ import javax.persistence.Table;
 @Table(name = "USER")
 @Builder
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class User {
 
     @Id
+    @NonNull
     private String id;
 
+    @NonNull
     private String name;
 }

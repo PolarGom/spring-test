@@ -21,8 +21,10 @@ import java.util.stream.Collectors;
 @ToString
 public class UserResponse {
 
+    @NonNull
     private String id;
-
+    
+    @NonNull
     private String name;
 
     public static UserResponse from(User user) {

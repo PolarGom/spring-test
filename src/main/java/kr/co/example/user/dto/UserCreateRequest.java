@@ -1,9 +1,6 @@
 package kr.co.example.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -14,7 +11,10 @@ import javax.validation.constraints.Size;
  * @author main
  * @since 2020-11-17
  */
+@Builder
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
