@@ -2,17 +2,21 @@ Spring Testing Study
 =========
  
 * [1. Spring Testing 간략 정리](https://github.com/PolarGom/spring-test/wiki)
-* [2. 프로젝트 정보](#프로젝트-정보)
+* [2. 개발환경](#개발환경)
 * [3. Application.yml](#application.yml)
 * [4. H2 Database 콘솔](#h2-database-콘솔)
 * [5. 프로젝트 파일 설명](#프로젝트-파일-설명)
+* [6. Rest Docs 으로 API문서 생성](#rest-docs-문서생성)
 
 -------------
-### 프로젝트 정보
+### 개발환경
 - Spring Boot 2.4.1
 - Gradle 5.6.4
 - JUnit 5
 - H2 Database
+- JPA & H2
+- Java 8
+- Lombok
 
 ### application.yml
 - jpa 설정
@@ -66,3 +70,46 @@ Spring Testing Study
   - import.sql: DB Insert 문 정의 파일
   - logback: 로그 설정 폴더
     - logback-spring.xml: 로그 설정 파일
+  - application.yml: Spring Application 설정
+  
+### rest docs 문서생성
+
+1. build.gradle 에 아래 추가 
+
+```
+// Asciidoctor 플러그인 추가
+plugins {
+	id "org.asciidoctor.convert" version "1.5.9.2"
+}
+
+// snippets 생성 위치 지정
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+// asciidoctor 테스트 구성
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+// gradle build 시 test -> asciidoctor 순으로 실행
+test {
+	outputs.dir snippetsDir
+	useJUnitPlatform()
+}
+
+// War 생성 시 asciidoctor 테스트 실행
+bootWar {
+	dependsOn asciidoctor
+	from ("${asciidoctor.outputDir}/html5") {
+		into 'static/docs'
+	}
+}
+
+// spring restdocs 의존성 추가
+dependencies {
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testCompile group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc', version: '2.0.5.RELEASE'
+}
+```
