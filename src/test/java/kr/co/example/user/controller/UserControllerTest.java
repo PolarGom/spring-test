@@ -5,7 +5,10 @@ import kr.co.example.user.dto.UserCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +38,17 @@ public class UserControllerTest extends CommonTest {
         this.mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
-                .andDo(print())
+                .andDo(document("create-user",
+                        requestFields(
+                                fieldWithPath("id").type(JsonFieldType.STRING).description("사용자 아이디"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("사용자 이름")
+                        ),
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공 유무"),
+                                fieldWithPath("errMsg").type(JsonFieldType.STRING).description("실패시 에러 메시지"),
+                                fieldWithPath("body").type(JsonFieldType.OBJECT).description("성공에 대한 바디 정보").optional()
+                        )
+                ))
                 .andExpect(status().isOk());
     }
 

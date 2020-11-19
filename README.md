@@ -113,3 +113,9 @@ dependencies {
 	testCompile group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc', version: '2.0.5.RELEASE'
 }
 ```
+
+2. Controller Test 코드에 작성을 진행(test/java 에 kr.co.example.user.controller 패키지의 클래스 참조)
+
+3. 테스트 코드에서 테스트를 진행하면 build > generated-snippets 에 document 메소드에 identifier 로 지정한 폴더가 생김
+
+4. gradle > build 를 진행하면 build/asciidoc/html5/ 에 html 파일이 생성 됨
