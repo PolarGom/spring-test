@@ -118,4 +118,10 @@ dependencies {
 
 3. 테스트 코드에서 테스트를 진행하면 build > generated-snippets 에 document 메소드에 identifier 로 지정한 폴더가 생김
 
-4. gradle > build 를 진행하면 build/asciidoc/html5/ 에 html 파일이 생성 됨
+4. src 폴더에 docs 폴더 생성, asciidoc 폴더 생성, api-guide.adoc 파일을 생성
+
+5. src/docs/asciidoc/api-guide.adoc 파일에 API 문서를 작성
+
+6. gradle > build 를 진행하면 api-guide.adoc 파일을 이용하여 build > asciidoc > html5 > api-guide.html 파일을 생성해줌
+
+7. 해당 html 파일을 웹 브라우저에서 열면 API 문서 작성 완료

@@ -5,10 +5,14 @@ import kr.co.example.user.dto.UserCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +39,7 @@ public class UserControllerTest extends CommonTest {
                 .name(name)
                 .build());
 
-        this.mockMvc.perform(post("/users")
+        this.mockMvc.perform(RestDocumentationRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andDo(document("create-user",
@@ -62,7 +66,7 @@ public class UserControllerTest extends CommonTest {
                 .id(id)
                 .build());
 
-        this.mockMvc.perform(post("/users")
+        this.mockMvc.perform(RestDocumentationRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
                 .andDo(print())
@@ -78,8 +82,17 @@ public class UserControllerTest extends CommonTest {
 
         String id = "honggildong";
 
-        this.mockMvc.perform(delete(String.format("/users/%s", id)))
-                .andDo(print())
+        this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/users/{id}", id))
+                .andDo(document("delete-user",
+                        pathParameters(
+                            parameterWithName("id").description("삭제 할 사용자 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공 유무"),
+                                fieldWithPath("errMsg").type(JsonFieldType.STRING).description("실패시 에러 메시지"),
+                                fieldWithPath("body").type(JsonFieldType.OBJECT).description("성공에 대한 바디 정보").optional()
+                        ))
+                )
                 .andExpect(status().isOk());
     }
 
@@ -89,7 +102,7 @@ public class UserControllerTest extends CommonTest {
 
         String id = "HelloWorld";
 
-        this.mockMvc.perform(delete(String.format("/users/%s", id)))
+        this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/users/{id}", id))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.success").value(false))
@@ -100,8 +113,17 @@ public class UserControllerTest extends CommonTest {
     @Test
     public void testFindAllUser() throws Exception {
 
-        this.mockMvc.perform(get("/users"))
-                .andDo(print())
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/users"))
+                .andDo(document("get-users",
+                        responseFields(
+                                fieldWithPath("success").type(JsonFieldType.BOOLEAN).description("성공 유무"),
+                                fieldWithPath("errMsg").type(JsonFieldType.STRING).description("실패시 에러 메시지"),
+                                fieldWithPath("body").type(JsonFieldType.OBJECT).description("성공에 대한 바디 정보"),
+                                fieldWithPath("body.list").type(JsonFieldType.ARRAY).description("사용자 목록"),
+                                fieldWithPath("body.list.[].id").type(JsonFieldType.STRING).description("사용자 아이디"),
+                                fieldWithPath("body.list.[].name").type(JsonFieldType.STRING).description("사용자 이름")
+                        ))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.body.list").isArray());
     }
